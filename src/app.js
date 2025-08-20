@@ -53,23 +53,28 @@ app.put("/usuarios/:id", async (req, res) => {
     try {
         const { body, params } = req;
 
-        await prismaClient.usuario.update({
-            where: { id: Number(params.id) },
-            data: {
-                ...body
-            },
-        })
-
-        const usuarioAtualizado = await prismaClient.usuario.findUnique({
-            where: {
-                id: Number(params.id)
-            }
-        })
-
-        res.status(201).json({
-            message: "Usuário atualizado!",
-            data: usuarioAtualizado
-        })
+        if(body.nome || body.email || body.cargo || body.senha){
+            await prismaClient.usuario.update({
+                where: { id: Number(params.id) },
+                data: {
+                    ...body
+                },
+            })
+    
+            const usuarioAtualizado = await prismaClient.usuario.findUnique({
+                where: {
+                    id: Number(params.id)
+                }
+            })
+    
+            res.status(201).json({
+                message: "Usuário atualizado!",
+                data: usuarioAtualizado
+            })
+            
+        }else{
+            return res.status(404).send("Atributos enviados não condizem com o schema");
+        }
         
     } catch (error) {
         console.log(error)
