@@ -1,0 +1,110 @@
+import { prismaClient } from '../prisma/prisma.js';
+
+//tabela Exames
+app.get('/exames', async (req, res) => {
+    try {
+        const exames = await prismaClient.Exame.findMany();
+        return res.json(exames);
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+app.get("/exame/:id", async (req, res) => {
+    try {
+        const exame = await prismaClient.Exame.findUnique({
+            where: {
+                id: Number(req.params.id)
+            }
+        });
+
+        if (!exame) return res.status(404).send("Exame não encontrado");
+        return res.json(exame);
+    } catch (e) {
+        console.log(e);
+    }
+});
+
+app.post("/exame", async (req, res) => {
+    try {
+        const { body } = req;
+        const bodyKeys = Object.keys(body)
+        for (const key of bodyKeys) {
+            if (key !== "tipo_exame" &&
+                key !== "resultado" &&
+                key !== "data_exame" &&
+                key !== "link_arquivo" &&
+                key !== "observacoes" &&
+                key !== "paciente_id"
+            ) return res.status(404).send("Colunas não existentes")
+        }
+        const exame = await prismaClient.Exame.create({
+            data: {
+                ...body,
+                data_exame: new Date(body.data_exame)
+            },
+        })
+        return res.status(201).json(exame)
+    } catch (error) {
+        console.log(error);
+        res.status(500).send(error)
+
+    }
+});
+
+app.put("/exame/:id", async (req, res) => {
+    try {
+        const { body, params } = req;
+        const bodyKeys = Object.keys(body)
+        for (const key of bodyKeys) {
+            if (key !== "tipo_exame" &&
+                key !== "resultado" &&
+                key !== "data_exame" &&
+                key !== "link_arquivo" &&
+                key !== "observacoes" &&
+                key !== "paciente_id"
+            ) return res.status(404).send("Colunas não existentes")
+        }
+
+        await prismaClient.Exame.update({
+            where: { id: Number(params.id) },
+            data: {
+                ...body
+            },
+        })
+
+        const exameAtualizado = await prismaClient.Exame.findUnique({
+            where: {
+                id: Number(params.id)
+            }
+        })
+
+        res.status(201).json({
+            message: "Exame atualizado!",
+            data: exameAtualizado
+        })
+
+    } catch (error) {
+        console.log(error)
+        if (error.code === "P2025") return res.status(404).send("Exame não encontrado");
+    }
+})
+
+app.delete("/exame/:id", async (req, res) => {
+    const { params } = req;
+    try {
+        const exameDeletado = await prismaClient.Exame.delete({
+            where: {
+                id: Number(params.id),
+            },
+        })
+        res.status(200).json({
+            message: "Exame deletado!",
+            data: exameDeletado
+        })
+    } catch (error) {
+        console.log(error)
+        if (error.code === "P2025") return res.status(404).send("Exame não encontrado");
+
+    }
+})
