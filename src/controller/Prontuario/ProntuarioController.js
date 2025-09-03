@@ -15,6 +15,7 @@ class ProntuarioController {
 
     async getProtuarioPorId(req, res) {
         try {
+            // const {params} = req;
             const protuario = await prismaClient.Protuario.findUnique({
                 where: {
                     id: Number(req.params.id)
@@ -22,6 +23,7 @@ class ProntuarioController {
             });
 
             if (!protuario) return res.status(404).send("Protuario não encontrado");
+            
             return res.json(protuario);
         } catch (error) {
             console.log(error);
