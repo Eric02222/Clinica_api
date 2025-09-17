@@ -89,6 +89,35 @@ class ConsultaController {
         }
     }
 
+    async atualizarinfoEsp(req, res) {
+        try {
+            const { body, paramns } = req;
+            await prismaClient.Consulta.patch({
+                where: { id: Number(paramns.id) },
+                data: {
+                    ...body
+                }
+            })
+
+            const consultaAtualizado = await prismaClient.Consulta.findUnique({
+                where: {
+                    id: Number(paramns.id)
+                }
+            })
+
+            res.status(201).json({
+                message: "Protuario atualizada!",
+                data: consultaAtualizado
+            })
+        } catch (error) {
+            console.log(error)
+            console.log(error)
+            if (error.code === "P2025") return res.status(404).send("Consulta não encontrado");
+            res.status(500).send(error)
+        }
+
+    }
+
     async deletarConsulta(req, res) {
         const { params } = req;
         try {

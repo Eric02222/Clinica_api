@@ -24,4 +24,4 @@ app.use(prontuarioRouter);
 //Router usuarios
 app.use(usuarioRouter);
 
-app.listen(3000, () => console.log('Servidor rodando na porta 3000'))
+app.listen(5000, () => console.log('Servidor rodando na porta 5000'))

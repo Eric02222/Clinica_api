@@ -92,6 +92,33 @@ class ProntuarioController {
         }
     }
 
+    async atualizarinfoEsp (req, res) {
+        try{
+            const {body, paramns} = req;
+            await prismaClient.protuario.patch({
+                where: {id: Number(paramns.id)},
+                data: {
+                    ...body
+                }
+            })
+
+            const protuarioAtualizado = await prismaClient.protuario.findUnique({
+                where: {
+                    id: Number(paramns.id)
+                }
+            })
+
+            res.status(201).json({
+                message: "Protuario atualizada!",
+                data: protuarioAtualizado
+            })
+        }catch (error){
+            if (error.code === "P2025") return res.status(404).send("Protuario não encontrado");
+            res.status(500).send(error)
+        }
+    }
+
+
     async deletarProntuario(req, res) {
         const { params } = req;
         try {

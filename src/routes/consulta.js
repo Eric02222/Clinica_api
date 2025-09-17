@@ -6,10 +6,10 @@ export const consultaRouter = Router();
 //Consulta 
 consultaRouter.get('/consultas', consultaController.getTodosOsConsultas);
 
-consultaRouter.get("/consulta/:id", consultaController.getConsultaPorId);
+consultaRouter.get("/consultas/:id", consultaController.getConsultaPorId);
 
 consultaRouter.post("/consultas", consultaController.criarConsulta);
 
-consultaRouter.put("/consulta/:id", consultaController.atualizarConsulta);
+consultaRouter.put("/consultas/:id", consultaController.atualizarConsulta);
 
-consultaRouter.delete("/consulta/:id", consultaController.criarConsulta);
+consultaRouter.delete("/consultas/:id", consultaController.criarConsulta);

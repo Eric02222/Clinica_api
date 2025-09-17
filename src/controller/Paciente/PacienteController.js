@@ -96,6 +96,35 @@ class PacienteController {
         }
     }
 
+    async atualizarinfoEsp(req, res) {
+        try {
+            const { body, paramns } = req;
+            await prismaClient.paciente.patch({
+                where: { id: Number(paramns.id) },
+                data: {
+                    ...body
+                }
+            })
+
+            const pacienteAtualizado = await prismaClient.paciente.findUnique({
+                where: {
+                    id: Number(paramns.id)
+                }
+            })
+
+            res.status(201).json({
+                message: "Protuario atualizada!",
+                data: pacienteAtualizado
+            })
+        } catch (error) {
+            console.log(error)
+            if (error.code === "P2025") return res.status(404).send("Paciente não encontrado");
+        }
+        if (error.code === "P2002") {
+            res.status(404).send("Falha ao cadastrar usuário: Email já cadastrado!")
+        }
+    }
+
     async deletarPaciente(req, res) {
         const { params } = req;
         try {

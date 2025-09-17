@@ -1,3 +1,4 @@
+import { Prisma } from '@prisma/client';
 import { prismaClient } from '../../../prisma/prisma.js';
 
 
@@ -81,6 +82,37 @@ class UsuarioController {
             }
         }
     }
+
+    async atualizarinfoEsp (req, res) {
+        try{
+            const {body, paramns} = req;
+            await prismaClient.usuario.patch({
+                where: {id: Number(paramns.id)},
+                data: {
+                    ...body
+                }
+            })
+
+            const usuarioAtualizado = await prismaClient.usuario.findUnique({
+                where: {
+                    id: Number(paramns.id)
+                }
+            })
+
+            res.status(201).json({
+                message: "Usuário atualizado!",
+                data: usuarioAtualizado
+            })
+        }catch (error){
+            if (error.code == "P2025") {
+                res.status(404).send("Usuário não existe no banco")
+            }
+            if (error.code === "P2002") {
+                res.status(404).send("Falha ao cadastrar usuário: Email já cadastrado!")
+            }
+        }
+    }
+
     async deletarUsuario(req, res) {
         const { params } = req
         try {

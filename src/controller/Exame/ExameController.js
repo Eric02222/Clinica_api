@@ -91,6 +91,33 @@ class ExameController {
         }
     }
 
+    async atualizarinfoEsp(req, res) {
+        try {
+            const { body, paramns } = req;
+            await prismaClient.exame.patch({
+                where: { id: Number(paramns.id) },
+                data: {
+                    ...body
+                }
+            })
+
+            const exameAtualizado = await prismaClient.exame.findUnique({
+                where: {
+                    id: Number(paramns.id)
+                }
+            })
+
+            res.status(201).json({
+                message: "Protuario atualizada!",
+                data: exameAtualizado
+            })
+        } catch (error) {
+            console.log(error)
+            if (error.code === "P2025") return res.status(404).send("Exame não encontrado");
+        }
+        
+    }
+
     async deletarExame(req, res) {
         const { params } = req;
         try {

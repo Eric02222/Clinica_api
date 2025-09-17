@@ -6,10 +6,10 @@ export const exameRouter = Router();
 //tabela Exames
 exameRouter.get('/exames', exameController.getTodosOsExames);
 
-exameRouter.get("/exame/:id", exameController.getExamePorId);
+exameRouter.get("/exames/:id", exameController.getExamePorId);
 
 exameRouter.post("/exames", exameController.criarExame);
 
-exameRouter.put("/exame/:id", exameController.atualizarExame);
+exameRouter.put("/exames/:id", exameController.atualizarExame);
 
-exameRouter.delete("/exame/:id", exameController.deletarExame);
+exameRouter.delete("/exames/:id", exameController.deletarExame);

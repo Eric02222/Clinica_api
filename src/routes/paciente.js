@@ -5,10 +5,10 @@ export const pacienteRouter = Router();
 //tabela paciente
 pacienteRouter.get('/pacientes', pacienteController.getTodosOsPacientes);
 
-pacienteRouter.get("/paciente/:id", pacienteController.getPacientePorId);
+pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId);
 
 pacienteRouter.post("/pacientes", pacienteController.criarPaciente);
 
-pacienteRouter.put("/paciente/:id", pacienteController.atualizarPaciente);
+pacienteRouter.put("/pacientes/:id", pacienteController.atualizarPaciente);
 
-pacienteRouter.delete("/paciente/:id", pacienteController.deletarPaciente);
+pacienteRouter.delete("/pacientes/:id", pacienteController.deletarPaciente);

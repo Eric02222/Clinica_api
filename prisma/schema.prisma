@@ -9,8 +9,8 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
-  url      = "mysql://root:senai@127.0.0.1:3306/clinica_dever"
+  provider = "postgresql"
+  url      = "postgresql://postgres:senai@127.0.0.1:5432/clinicadb"
 }
 
 // Tabela usuario
@@ -22,6 +22,8 @@ model Usuario {
   cargo     String
   Protuario Protuario[]
   Consulta  Consulta[]
+
+  @@map("usuario")
 }
 
 // Tabela protuario
@@ -33,6 +35,8 @@ model Protuario {
   paciente_id           Int
   paciente              Paciente @relation(fields: [paciente_id], references: [id])
   usuario               Usuario  @relation(fields: [medico_responsavel_id], references: [id])
+
+    @@map("protuario")
 }
 
 // Tabela consulta
@@ -45,6 +49,8 @@ model Consulta {
   paciente_id           Int
   paciente              Paciente @relation(fields: [paciente_id], references: [id])
   usuario               Usuario  @relation(fields: [medico_responsavel_id], references: [id])
+
+  @@map("consulta")
 }
 
 // Tabela paciente
@@ -60,6 +66,8 @@ model Paciente {
   Protuario       Protuario[]
   Consulta        Consulta[]
   Exame           Exame[]
+
+  @@map("paciente")
 }
 
 // Tabela exame
@@ -72,4 +80,6 @@ model Exame {
   observacoes  String
   paciente_id  Int
   paciente     Paciente @relation(fields: [paciente_id], references: [id])
+
+  @@map("exame")
 }
