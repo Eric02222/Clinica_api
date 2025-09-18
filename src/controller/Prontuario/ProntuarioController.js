@@ -3,9 +3,15 @@ import { prismaClient } from '../../../prisma/prisma.js';
 
 class ProntuarioController {
     constructor() { }
-    async getTodosOsProntuarios(_, res) {
+    async getTodosOsProntuarios(req, res) {
+        const {page, limit} = req.query
+        const pageNumber = Number(page);
+        const pageLimit = Number(limit);
         try {
-            const protuarios = await prismaClient.Protuario.findMany();
+            const protuarios = await prismaClient.Protuario.findMany({
+                skip: (pageNumber - 1) * pageLimit,
+                take: pageLimit,
+              });
             return res.json(protuarios);
         } catch (error) {
             console.log(error);

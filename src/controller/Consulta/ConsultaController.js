@@ -2,9 +2,16 @@ import { prismaClient } from '../../../prisma/prisma.js';
 
 class ConsultaController {
     constructor() { }
-    async getTodosOsConsultas(_, res) {
+    async getTodosOsConsultas(req, res) {
+        const { page, limit } = req.query 
+        console.log(page, limit)
+        const pageNumber = Number(page);
+        const pageLimit = Number(limit);
         try {
-            const consultas = await prismaClient.Consulta.findMany();
+            const consultas = await prismaClient.consulta.findMany({
+                skip: (pageNumber - 1) * pageLimit,
+                take: pageLimit,
+              });
             return res.json(consultas);
         } catch (e) {
             console.log(e);
@@ -13,7 +20,7 @@ class ConsultaController {
 
     async getConsultaPorId(req, res) {
         try {
-            const consulta = await prismaClient.Consulta.findUnique({
+            const consulta = await prismaClient.consulta.findUnique({
                 where: {
                     id: Number(req.params.id)
                 }
@@ -38,7 +45,7 @@ class ConsultaController {
                     key !== "paciente_id"
                 ) return res.status(404).send("Colunas não existentes")
             }
-            const consulta = await prismaClient.Consulta.create({
+            const consulta = await prismaClient.consulta.create({
                 data: {
                     ...body,
                     data_consulta: new Date(body.data_consulta)
@@ -71,7 +78,7 @@ class ConsultaController {
                 },
             })
 
-            const consultaAtualizado = await prismaClient.Consulta.findUnique({
+            const consultaAtualizado = await prismaClient.consulta.findUnique({
                 where: {
                     id: Number(params.id)
                 }
@@ -99,7 +106,7 @@ class ConsultaController {
                 }
             })
 
-            const consultaAtualizado = await prismaClient.Consulta.findUnique({
+            const consultaAtualizado = await prismaClient.consulta.findUnique({
                 where: {
                     id: Number(paramns.id)
                 }
@@ -121,7 +128,7 @@ class ConsultaController {
     async deletarConsulta(req, res) {
         const { params } = req;
         try {
-            const consultaDeletado = await prismaClient.Consulta.delete({
+            const consultaDeletado = await prismaClient.consulta.delete({
                 where: {
                     id: Number(params.id),
                 },
