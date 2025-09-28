@@ -15,13 +15,13 @@ class AuthController {
         res
     ) {
         try {
-            const { email, password, name } = req.body;
+            const { email, senha, nome, cargo } = req.body;
             // Validação básica
-            if (!email || !password) {
+            if (!email || !senha) {
                 return res.status(400).json({ error: "Email e senha são obrigatórios" });
             }
             // Verificar se usuário já existe
-            const existingUser = await prismaClient.user.findUnique({
+            const existingUser = await prismaClient.usuario.findUnique({
                 where: { email },
             });
             if (existingUser) {
@@ -29,17 +29,19 @@ class AuthController {
             }
             // Hash da senha com bcrypt
             const saltRounds = 10;
-            const hashedPassword = await bcrypt.hash(password, saltRounds);
+            const hashedsenha = await bcrypt.hash(senha, saltRounds);
             // Criar usuário no banco de dados
-            const user = await prismaClient.user.create({
-                data: { email, password: hashedPassword, name: name || null },
+            const usuario = await prismaClient.usuario.create({
+                data: { email, senha: hashedsenha, nome: nome, cargo: cargo || null },
                 select: {
                     id: true,
                     email: true,
-                    name: true,
+                    nome: true,
+                    cargo: true,
+
                 },
             });
-            return res.status(201).json(user);
+            return res.status(201).json(usuario);
         } catch (error) {
             console.error("Erro no registro:", error);
             res.status(500).json({ error: "Erro interno do servidor" });
@@ -49,23 +51,25 @@ class AuthController {
 
     async login(req, res) {
         try {
-            const { email, password } = req.body;
-            const user = await prismaClient.user.findUnique({ where: { email } }); // Verificar se usuário existe e senha está correta
-            if (!user || !(await bcrypt.compare(password, user.password))) {
+            const { email, senha } = req.body;
+            const usuario = await prismaClient.usuario.findUnique({ where: { email } }); // Verificar se usuário existe e senha está correta
+            if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
                 return res.status(401).json({ error: "Credenciais inválidas" });
             }
             // Gerar access token (curta duração)
             const accessToken = signAccessToken({
-                userId: user.id,
-                email: user.email,
-                name: user.name,
+                usuarioId: usuario.id,
+                email: usuario.email,
+                nome: usuario.nome,
+                cargo: usuario.cargo,
             });
 
             // Gerar refresh token (longa duração)
             const refreshToken = signRefreshToken({
-                userId: user.id,
-                email: user.email,
-                name: user.name,
+                usuarioId: usuario.id,
+                email: usuario.email,
+                nome: usuario.nome,
+                cargo: usuario.cargo,
             });
             // Armazenar refresh token no banco de dados
             const expiresAt = new Date();
@@ -75,17 +79,18 @@ class AuthController {
                 data: {
                     token: refreshToken,
                     type: "refresh",
-                    userId: user.id,
+                    usuarioId: usuario.id,
                     expiresAt,
                 },
             });
             res.status(200).json({
                 accessToken,
                 refreshToken,
-                user: {
-                    id: user.id,
-                    email: user.email,
-                    name: user.name,
+                usuario: {
+                    usuarioId: usuario.id,
+                    email: usuario.email,
+                    nome: usuario.nome,
+                    cargo: usuario.cargo,
                 },
             });
         } catch (error) {
@@ -116,7 +121,7 @@ class AuthController {
     //         const accessToken = signAccessToken({
     //             userId: payload.id,
     //             email: payload.email,
-    //             name: payload.name,
+    //             nome: payload.nome,
     //         });
     //         return res.json({ accessToken });
     //     } catch {

@@ -83,3 +83,14 @@ model Exame {
 
   @@map("exame")
 }
+
+
+model token {
+  id            Int @id @default(autoincrement)
+  token         String
+  type          String
+  expiresAt     DateTime
+  usuarioId     Int
+  usuario       Usuario @relation(fields: [usuarioId], references: [id])
+  
+}
