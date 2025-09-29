@@ -1,10 +1,10 @@
 import bcrypt from "bcrypt";
-import { prismaClient } from "../../prisma/prisma.ts";
+import { prismaClient } from "../../../prisma/prisma.js";
 import {
     signAccessToken,
     signRefreshToken,
     verifyRefresh,
-} from "../utils/jwt.ts";
+} from "../../utils/jwt.js";
 
 
 class AuthController {
@@ -32,7 +32,7 @@ class AuthController {
             const hashedsenha = await bcrypt.hash(senha, saltRounds);
             // Criar usuário no banco de dados
             const usuario = await prismaClient.usuario.create({
-                data: { email, senha: hashedsenha, nome: nome, cargo: cargo || null },
+                data: { email:email , senha: hashedsenha, nome: nome, cargo: cargo || null },
                 select: {
                     id: true,
                     email: true,

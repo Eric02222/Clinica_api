@@ -86,11 +86,11 @@ model Exame {
 
 
 model token {
-  id            Int @id @default(autoincrement)
+  id            Int @id @default(autoincrement())
   token         String
   type          String
   expiresAt     DateTime
   usuarioId     Int
-  usuario       Usuario @relation(fields: [usuarioId], references: [id])
+  usuario       Usuario  @relation(fields: [medico_responsavel_id], references: [id])
   
 }
