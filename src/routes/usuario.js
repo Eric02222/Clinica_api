@@ -8,6 +8,8 @@ usuarioRouter.get('/usuarios', usuarioController.getTodosOsUsuarios);
 
 usuarioRouter.get("/usuarios/:id", usuarioController.getUsuarioPorId);
 
+usuarioRouter.get("/usuarios/:email", usuarioController.getUsuarioPoremail);
+
 usuarioRouter.post("/usuarios", usuarioController.criarUsuario);
 
 usuarioRouter.put("/usuarios/:id", usuarioController.atualizarUsuario);

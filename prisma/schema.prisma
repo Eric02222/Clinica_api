@@ -22,6 +22,7 @@ model Usuario {
   cargo     String
   Protuario Protuario[]
   Consulta  Consulta[]
+  token     token[]
 
   @@map("usuario")
 }
@@ -36,7 +37,7 @@ model Protuario {
   paciente              Paciente @relation(fields: [paciente_id], references: [id])
   usuario               Usuario  @relation(fields: [medico_responsavel_id], references: [id])
 
-    @@map("protuario")
+  @@map("protuario")
 }
 
 // Tabela consulta
@@ -84,13 +85,11 @@ model Exame {
   @@map("exame")
 }
 
-
 model token {
-  id            Int @id @default(autoincrement())
-  token         String
-  type          String
-  expiresAt     DateTime
-  usuarioId     Int
-  usuario       Usuario  @relation(fields: [medico_responsavel_id], references: [id])
-  
+  id        Int      @id @default(autoincrement())
+  token     String
+  type      String
+  expiresAt DateTime
+  usuarioId Int
+  usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 }

@@ -5,14 +5,14 @@ import { prismaClient } from '../../../prisma/prisma.js';
 class UsuarioController {
     constructor() { }
     async getTodosOsUsuarios(req, res) {
-        const {page, limit} = req.query
+        const { page, limit } = req.query
         const pageNumber = Number(page);
         const pageLimit = Number(limit);
         try {
             const usuarios = await prismaClient.usuario.findMany({
                 skip: (pageNumber - 1) * pageLimit,
                 take: pageLimit,
-              });
+            });
             return res.json(usuarios)
         }
         catch (e) {
@@ -26,6 +26,22 @@ class UsuarioController {
             const usuario = await prismaClient.usuario.findUnique({
                 where: {
                     id: Number(params.id)
+                }
+            })
+            if (!usuario) return res.status(404).send("Usuário não existe!")
+            return res.json(usuario)
+        }
+        catch (e) {
+            console.log(e)
+        }
+    }
+
+    async getUsuarioPoremail(req, res) {
+        try {
+            const { params } = req
+            const usuario = await prismaClient.usuario.findUnique({
+                where: {
+                    email: String(params.email)
                 }
             })
             if (!usuario) return res.status(404).send("Usuário não existe!")
@@ -89,11 +105,11 @@ class UsuarioController {
         }
     }
 
-    async atualizarinfoEsp (req, res) {
-        try{
-            const {body, paramns} = req;
+    async atualizarinfoEsp(req, res) {
+        try {
+            const { body, paramns } = req;
             await prismaClient.usuario.patch({
-                where: {id: Number(paramns.id)},
+                where: { id: Number(paramns.id) },
                 data: {
                     ...body
                 }
@@ -109,7 +125,7 @@ class UsuarioController {
                 message: "Usuário atualizado!",
                 data: usuarioAtualizado
             })
-        }catch (error){
+        } catch (error) {
             if (error.code == "P2025") {
                 res.status(404).send("Usuário não existe no banco")
             }
