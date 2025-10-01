@@ -90,6 +90,7 @@ model token {
   token     String
   type      String
   expiresAt DateTime
+  revoked   String
   usuarioId Int
   usuario   Usuario  @relation(fields: [usuarioId], references: [id])
 }

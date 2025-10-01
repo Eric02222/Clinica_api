@@ -129,10 +129,7 @@ class AuthController {
     //     }
     // };
 
-    async logout(
-        req,
-        res
-    ) {
+    async logout(req,res) {
         const { refreshToken } = req.body;
         try {
             const storedRefreshToken = await prismaClient.token.findFirst({
