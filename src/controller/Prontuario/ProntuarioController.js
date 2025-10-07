@@ -8,7 +8,7 @@ class ProntuarioController {
         const pageNumber = Number(page);
         const pageLimit = Number(limit);
         try {
-            const protuarios = await prismaClient.Protuario.findMany({
+            const protuarios = await prismaClient.protuario.findMany({
                 skip: (pageNumber - 1) * pageLimit,
                 take: pageLimit,
               });
@@ -22,7 +22,7 @@ class ProntuarioController {
     async getProtuarioPorId(req, res) {
         try {
             // const {params} = req;
-            const protuario = await prismaClient.Protuario.findUnique({
+            const protuario = await prismaClient.protuario.findUnique({
                 where: {
                     id: Number(req.params.id)
                 }
@@ -48,7 +48,7 @@ class ProntuarioController {
                     key !== "paciente_id"
                 ) return res.status(404).send("Colunas não existentes")
             }
-            const protuario = await prismaClient.Protuario.create({
+            const protuario = await prismaClient.protuario.create({
                 data: {
                     ...body,
                     data: new Date(body.data),
@@ -73,14 +73,14 @@ class ProntuarioController {
                 ) return res.status(404).send("Colunas não existentes")
             }
 
-            await prismaClient.Protuario.update({
+            await prismaClient.protuario.update({
                 where: { id: Number(params.id) },
                 data: {
                     ...body
                 },
             })
 
-            const protuarioAtualizado = await prismaClient.Protuario.findUnique({
+            const protuarioAtualizado = await prismaClient.protuario.findUnique({
                 where: {
                     id: Number(params.id)
                 }
@@ -128,7 +128,7 @@ class ProntuarioController {
     async deletarProntuario(req, res) {
         const { params } = req;
         try {
-            const protuarioDeletado = await prismaClient.Protuario.delete({
+            const protuarioDeletado = await prismaClient.protuario.delete({
                 where: {
                     id: Number(params.id),
                 },

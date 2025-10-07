@@ -7,7 +7,7 @@ class PacienteController {
         const pageNumber = Number(page);
         const pageLimit = Number(limit);
         try {
-            const pacientes = await prismaClient.Paciente.findMany({
+            const pacientes = await prismaClient.paciente.findMany({
                 skip: (pageNumber - 1) * pageLimit,
                 take: pageLimit,
               });
@@ -19,7 +19,7 @@ class PacienteController {
 
     async getPacientePorId(req, res) {
         try {
-            const paciente = await prismaClient.Paciente.findUnique({
+            const paciente = await prismaClient.paciente.findUnique({
                 where: {
                     id: Number(req.params.id)
                 }
@@ -82,7 +82,7 @@ class PacienteController {
                 },
             })
 
-            const pacienteAtualizado = await prismaClient.Paciente.findUnique({
+            const pacienteAtualizado = await prismaClient.paciente.findUnique({
                 where: {
                     id: Number(params.id)
                 }
@@ -134,7 +134,7 @@ class PacienteController {
     async deletarPaciente(req, res) {
         const { params } = req;
         try {
-            const pacienteDeletado = await prismaClient.Paciente.delete({
+            const pacienteDeletado = await prismaClient.paciente.delete({
                 where: {
                     id: Number(params.id),
                 },

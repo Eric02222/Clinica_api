@@ -8,7 +8,7 @@ usuarioRouter.get('/usuarios', usuarioController.getTodosOsUsuarios);
 
 usuarioRouter.get("/usuarios/:id", usuarioController.getUsuarioPorId);
 
-usuarioRouter.get("/usuarios/:email", usuarioController.getUsuarioPoremail);
+usuarioRouter.get("/usuarios/byemail/", usuarioController.getUsuarioPorEmail);
 
 usuarioRouter.post("/usuarios", usuarioController.criarUsuario);
 

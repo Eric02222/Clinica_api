@@ -7,7 +7,7 @@ class ExameController {
         const pageNumber = Number(page);
         const pageLimit = Number(limit);
         try {
-            const exames = await prismaClient.Exame.findMany({
+            const exames = await prismaClient.exame.findMany({
                 skip: (pageNumber - 1) * pageLimit,
                 take: pageLimit,
               });
@@ -19,7 +19,7 @@ class ExameController {
 
     async getExamePorId(req, res) {
         try {
-            const exame = await prismaClient.Exame.findUnique({
+            const exame = await prismaClient.exame.findUnique({
                 where: {
                     id: Number(req.params.id)
                 }
@@ -45,7 +45,7 @@ class ExameController {
                     key !== "paciente_id"
                 ) return res.status(404).send("Colunas não existentes")
             }
-            const exame = await prismaClient.Exame.create({
+            const exame = await prismaClient.exame.create({
                 data: {
                     ...body,
                     data_exame: new Date(body.data_exame)
@@ -73,14 +73,14 @@ class ExameController {
                 ) return res.status(404).send("Colunas não existentes")
             }
 
-            await prismaClient.Exame.update({
+            await prismaClient.exame.update({
                 where: { id: Number(params.id) },
                 data: {
                     ...body
                 },
             })
 
-            const exameAtualizado = await prismaClient.Exame.findUnique({
+            const exameAtualizado = await prismaClient.exame.findUnique({
                 where: {
                     id: Number(params.id)
                 }
@@ -127,7 +127,7 @@ class ExameController {
     async deletarExame(req, res) {
         const { params } = req;
         try {
-            const exameDeletado = await prismaClient.Exame.delete({
+            const exameDeletado = await prismaClient.exame.delete({
                 where: {
                     id: Number(params.id),
                 },
