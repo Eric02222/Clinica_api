@@ -32,7 +32,7 @@ class AuthController {
             const hashedsenha = await bcrypt.hash(senha, saltRounds);
             // Criar usuário no banco de dados
             const usuario = await prismaClient.usuario.create({
-                data: { email: email, senha: hashedsenha, nome: nome, cargo: cargo || null },
+                data: { email:email , senha: hashedsenha, nome: nome, cargo: cargo || null },
                 select: {
                     id: true,
                     email: true,
@@ -61,7 +61,7 @@ class AuthController {
                 usuarioId: usuario.id,
                 email: usuario.email,
                 nome: usuario.nome,
-
+                cargo: usuario.cargo,
             });
 
             // Gerar refresh token (longa duração)
@@ -69,7 +69,7 @@ class AuthController {
                 usuarioId: usuario.id,
                 email: usuario.email,
                 nome: usuario.nome,
-
+                cargo: usuario.cargo,
             });
             // Armazenar refresh token no banco de dados
             const expiresAt = new Date();
@@ -90,7 +90,7 @@ class AuthController {
                     usuarioId: usuario.id,
                     email: usuario.email,
                     nome: usuario.nome,
-
+                    cargo: usuario.cargo,
                 },
             });
         } catch (error) {
@@ -100,46 +100,41 @@ class AuthController {
         return res;
     };
 
+    // desabilitado pq o professor vai fazer junto
+    // async refresh(
+    //     req,
+    //     res
+    // ) {
+    //     const { refreshToken } = req.body;
+    //     const storedRefreshToken = await prismaClient.token.findFirst({
+    //         where: { token: refreshToken },
+    //     });
+    //     if (
+    //         !storedRefreshToken ||
+    //         storedRefreshToken.revoked ||
+    //         storedRefreshToken.expiresAt < new Date()
+    //     )
+    //         return res.status(401).json({ error: "invalid refresh token" });
 
-    async refresh(
-        req,
-        res
-    ) {
+    //     try {
+    //         const payload = verifyRefresh(refreshToken);
+    //         const accessToken = signAccessToken({
+    //             userId: payload.id,
+    //             email: payload.email,
+    //             nome: payload.nome,
+    //         });
+    //         return res.json({ accessToken });
+    //     } catch {
+    //         return res.status(401).json({ error: "invalid refresh token" });
+    //     }
+    // };
+
+    async logout(req,res) {
         const { refreshToken } = req.body;
-        const storedRefreshToken = await prismaClient.token.findFirst({
-            where: { token: refreshToken },
-        });
-        if (
-            !storedRefreshToken ||
-            storedRefreshToken.revoked ||
-            storedRefreshToken.expiresAt < new Date()
-        )
-            return res.status(401).json({ error: "invalid refresh token" });
-
-        try {
-            const payload = verifyRefresh(refreshToken);
-            const accessToken = signAccessToken({
-                userId: payload.id,
-                email: payload.email,
-                nome: payload.nome,
-            });
-            return res.json({ accessToken });
-        } catch {
-            return res.status(401).json({ error: "invalid refresh token" });
-        }
-    };
-
-    async logout(
-        req,
-        res
-    ) {
-        const { refreshToken } = req.body;
-        console.log(refreshToken)
         try {
             const storedRefreshToken = await prismaClient.token.findFirst({
                 where: { token: refreshToken },
             });
-            console.log(storedRefreshToken)
             if (
                 !storedRefreshToken ||
                 storedRefreshToken.revoked ||
@@ -151,12 +146,12 @@ class AuthController {
                 where: { id: storedRefreshToken?.id ?? 0 },
                 data: { revoked: true },
             });
-            console.log("teste")
-            return res.status(200).json("Usuário deslogado!");
-
         } catch (error) {
             res.status(400).json(error)
         }
+
+        return res.status(200).json("Usuário deslogado!");
+
     }
 }
 

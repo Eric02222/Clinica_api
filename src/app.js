@@ -5,10 +5,15 @@ import { pacienteRouter } from './routes/paciente.js';
 import { prontuarioRouter } from './routes/prontuario.js';
 import { usuarioRouter } from './routes/usuario.js';
 import { authRouter } from './routes/authRoutes.js';
+import { auth } from './middleware/auth.js';
 
 const app = express();
 
 app.use(express.json());
+
+//Router usuarios
+app.use('/auth', authRouter);
+app.use(auth)
 
 //Router cinsultas
 app.use(consultaRouter);
@@ -25,7 +30,6 @@ app.use(prontuarioRouter);
 //Router usuarios
 app.use(usuarioRouter);
 
-//Router usuarios
-app.use(authRouter);
+
 
 app.listen(5000, () => console.log('Servidor rodando na porta 5000'))
