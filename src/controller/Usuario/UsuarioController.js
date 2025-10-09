@@ -4,15 +4,9 @@ import { prismaClient } from '../../../prisma/prisma.js';
 
 class UsuarioController {
     constructor() { }
-    async getTodosOsUsuarios(req, res) {
-        const { page, limit } = req.query
-        const pageNumber = Number(page);
-        const pageLimit = Number(limit);
+    async getTodosOsUsuarios(_, res) {
         try {
-            const usuarios = await prismaClient.usuario.findMany({
-                skip: (pageNumber - 1) * pageLimit,
-                take: pageLimit,
-            });
+            const usuarios = await prismaClient.usuario.findMany({});
             return res.json(usuarios)
         }
         catch (e) {

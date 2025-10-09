@@ -3,15 +3,29 @@ import { prismaClient } from '../../../prisma/prisma.js';
 class ConsultaController {
     constructor() { }
     async getTodosOsConsultas(req, res) {
-        const { page, limit } = req.query 
-        console.log(page, limit)
+        const { page, limit } = req.query
+        const { query } = req
+
         const pageNumber = Number(page);
         const pageLimit = Number(limit);
+
         try {
             const consultas = await prismaClient.consulta.findMany({
+                
+                where:{
+                    data_consulta:{
+                        lte: query.dataFinal ?  new Date(query.dataFinal) : undefined,
+                        gte: query.dataInicio ? new Date(query.dataInicio) : undefined
+                    },
+                    
+                    paciente: {
+                        nome: query.paciente
+                    }
+                },
+
                 skip: (pageNumber - 1) * pageLimit,
                 take: pageLimit,
-              });
+            });
             return res.json(consultas);
         } catch (e) {
             console.log(e);

@@ -31,7 +31,7 @@ model Usuario {
 model Protuario {
   id                    Int      @id @default(autoincrement())
   descricao             String
-  data                  DateTime
+  data                  DateTime?
   medico_responsavel_id Int
   paciente_id           Int
   paciente              Paciente @relation(fields: [paciente_id], references: [id])
@@ -44,7 +44,7 @@ model Protuario {
 model Consulta {
   id                    Int      @id @default(autoincrement())
   motivo                String
-  data_consulta         DateTime
+  data_consulta         DateTime?
   observacoes           String
   medico_responsavel_id Int
   paciente_id           Int

@@ -2,15 +2,10 @@ import { prismaClient } from '../../../prisma/prisma.js';
 
 class ExameController {
     constructor() { }
-    async getTodosOsExames(req, res) {
-        const {page, limit} = req.query
-        const pageNumber = Number(page);
-        const pageLimit = Number(limit);
+    async getTodosOsExames(_, res) {
+
         try {
-            const exames = await prismaClient.exame.findMany({
-                skip: (pageNumber - 1) * pageLimit,
-                take: pageLimit,
-              });
+            const exames = await prismaClient.exame.findMany({});
             return res.json(exames);
         } catch (e) {
             console.log(e);

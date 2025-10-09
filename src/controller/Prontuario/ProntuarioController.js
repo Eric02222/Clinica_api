@@ -4,25 +4,27 @@ import { getToken } from '../../utils/jwt.js';
 
 class ProntuarioController {
     constructor() { }
+
     async getTodosOsProntuarios(req, res) {
-        const { page, limit } = req.query
-        const token = getToken(req.headers.authorization)
-        const pageNumber = Number(page);
-        const pageLimit = Number(limit);
+        // const token = getToken(req.headers.authorization)
+        const { query } = req;
         try {
             const protuarios = await prismaClient.protuario.findMany({
-                where: {
-                    medico_responsavel_id: token.usuarioId
-                },
-                include:{
-                    paciente:{
-                        select:{
-                            nome:true
-                        }
+                // where: {
+                //     medico_responsavel_id: token.usuarioId
+                // },
+                where:{
+                    data:{
+                        lte: query.dataFinal ?  new Date(query.dataFinal) : undefined,
+                        gte: query.dataInicio ? new Date(query.dataInicio) : undefined
+                    },
+                    
+                    paciente: {
+                        nome: query.paciente
                     }
-                },
-                skip: (pageNumber - 1) * pageLimit,
-                take: pageLimit,
+                }
+
+
             });
             return res.json(protuarios);
         } catch (error) {
@@ -37,11 +39,15 @@ class ProntuarioController {
             const protuario = await prismaClient.protuario.findUnique({
                 where: {
                     id: Number(req.params.id),
+                    medico_responsavel_id: token.usuarioId
                 }
             });
 
+            // if (protuario.medico_responsavel_id !== token.usuarioId) {
+            //     return res.status(404).send("Não tem acesso a esse prontuario");
+            // }
+
             if (!protuario) return res.status(404).send("Protuario não encontrado");
-            else if(protuario.medico_responsavel_id !== token.usuarioId) return res.status(404).send("Não tem acesso a esse prontuario");
             return res.json(protuario);
         } catch (error) {
             console.log(error);
@@ -52,17 +58,18 @@ class ProntuarioController {
     async criarProntuario(req, res) {
         try {
             const { body } = req;
+            const token = getToken(req.headers.authorization)
             const bodyKeys = Object.keys(body)
             for (const key of bodyKeys) {
                 if (key !== "descricao" &&
                     key !== "data" &&
-                    key !== "medico_responsavel_id" &&
                     key !== "paciente_id"
                 ) return res.status(404).send("Colunas não existentes")
             }
             const protuario = await prismaClient.protuario.create({
                 data: {
                     ...body,
+                    medico_responsavel_id: token.usuarioId,
                     data: new Date(body.data),
                 },
             })
@@ -72,6 +79,7 @@ class ProntuarioController {
             res.status(500).send(error)
         }
     }
+
 
     async atualizarProntuario(req, res) {
         try {
