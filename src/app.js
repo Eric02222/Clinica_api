@@ -8,7 +8,7 @@ import { usuarioRouter } from './routes/usuario.js';
 import { authRouter } from './routes/authRoutes.js';
 import { auth } from './middleware/auth.js';
 
-const app = express();
+export const app = express();
 
 app.use(cors()); 
 app.use(express.json());
@@ -34,4 +34,4 @@ app.use(usuarioRouter);
 
 
 
-app.listen(5000, () => console.log('Servidor rodando na porta 5000'))
+// app.listen(5000, () => console.log('Servidor rodando na porta 5000'))
