@@ -1,55 +1,80 @@
-// Path: tests/routes/usuarios.test.js
+import bcrypt from "bcrypt";
+import request from "supertest";
+import { app } from "../../src/app";
+import { prismaClient } from "../../prisma/prisma";
 
-import request from 'supertest';
-import { app } from '../../src/app.js';
-import { prismaClient } from '../../prisma/prisma.js';
+async function clearDatabase() {
+    await prismaClient.prontuario.deleteMany({});
+    await prismaClient.consulta.deleteMany({});
+    await prismaClient.exame.deleteMany({});
+    await prismaClient.paciente.deleteMany({});
+    await prismaClient.token.deleteMany({});
+    await prismaClient.usuario.deleteMany({});
+}
 
-describe('Testes de Integração para /usuarios', () => {
+describe("Testes de Integração para /usuarios", () => {
+    let token;
 
-    // limpar o banco na ordem correta
     beforeEach(async () => {
-        // limpar as que dependem do usuário
+        await clearDatabase();
 
-        await prismaClient.prontuario.deleteMany({});
-        await prismaClient.consulta.deleteMany({});
-        await prismaClient.exame.deleteMany({});
-        await prismaClient.paciente.deleteMany({});
+        const hashedPassword = await bcrypt.hash("123", 10);
 
-        // 3. "pai"
-        await prismaClient.usuario.deleteMany({});
-
-        // seed pra test
         await prismaClient.usuario.create({
             data: {
-                nome: 'Usuario de Teste Integrado',
-                email: 'integrado@teste.com',
-                senha: '123',
-                cargo: 'medico',
+                nome: "Usuario de Teste Integrado",
+                email: "integrado@teste.com",
+                senha: hashedPassword,
+                cargo: "medico",
             },
         });
+
+        const userResponse = await request(app)
+            .post("/auth/login")
+            .send({ email: "integrado@teste.com", senha: "123" })
+            .expect(200);
+
+        token = userResponse.body.accessToken;
     });
 
-    // limpar tudo dps dos testes na mesma ordem
     afterAll(async () => {
-
-        await prismaClient.prontuario.deleteMany({});
-        await prismaClient.consulta.deleteMany({});
-        await prismaClient.exame.deleteMany({});
-
-        // 2. "intermediárias"
-        await prismaClient.paciente.deleteMany({});
-
-        // 3. "pai"
-        await prismaClient.usuario.deleteMany({});
-
+        await clearDatabase();
         await prismaClient.$disconnect();
     });
 
+    test("GET /usuarios - Deve retornar a lista de usuários do banco", async () => {
+        const response = await request(app)
+            .get("/usuarios")
+            .set("Authorization", `Bearer ${token}`)
+            .expect("Content-Type", /json/);
 
-    test('GET /usuarios - Deve retornar a lista de usuários do banco', async () => {
+        expect(response.status).toBe(200);
+        expect(Array.isArray(response.body)).toBe(true);
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe("Usuario de Teste Integrado");
+        expect(response.body[0].email).toBe("integrado@teste.com");
+    });
+
+    test("GET /usuarios - Deve retornar um array vazio se não houver usuários", async () => {
+        await clearDatabase();
+
+        const response = await request(app)
+            .get("/usuarios")
+            .set("Authorization", `Bearer ${token}`);
+
+        expect(response.status).toBe(200);
+        expect(response.body).toEqual([]);
+    });
+
+
+    test('GET /usuarios /:email - Deve retornar a um usuário especifico do banco', async () => {
         // O supertest req dados da app
-        const response = await request(app).get('/usuarios');
-    
+        const response = await request(app)
+         .get("/usuarios/byemail/integrado@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
+
+
         // deu boa?
         expect(response.status).toBe(200);
 
@@ -62,132 +87,96 @@ describe('Testes de Integração para /usuarios', () => {
         expect(response.body[0].email).toBe('integrado@teste.com');
     });
 
-    test('GET /usuarios - Deve retornar um array vazio se não houver usuários', async () => {
 
-        await prismaClient.prontuario.deleteMany({});
-        await prismaClient.consulta.deleteMany({});
-        await prismaClient.exame.deleteMany({});
+    test('POST /usuarios - Deve criar um usuários no banco', async () => {
+        // limpar as que dependem do usuário
 
-        // 2. intermediárias
-        await prismaClient.paciente.deleteMany({});
+        await clearDatabase();
 
-        // 3. "pai"
-        await prismaClient.usuario.deleteMany({});
+        // seed pra test
+        await prismaClient.usuario.create({
+            data: {
+                nome: 'Usuario de Teste Integrado Post',
+                email: 'integradoPost@teste.com',
+                senha: '123',
+                cargo: 'medico',
+            },
+        });
 
-        // acao
-        const response = await request(app).get('/usuarios');
 
-        // verificar assert
+        // O supertest req dados da app
+        const response = await request(app)
+         .get("/usuarios")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
+
+
+        // deu boa?
         expect(response.status).toBe(200);
-        expect(response.body.length).toBe(0);
-        expect(response.body).toEqual([]);
+
+        // O corpo da resposta é um array?
+        expect(Array.isArray(response.body)).toBe(true);
+
+        // O array contém o usuário que criamos?
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
+        expect(response.body[0].email).toBe('integradoPost@teste.com');
     });
 
-    // test('GET /usuarios /:id - Deve retornar a um usuário especifico do banco', async () => {
-    //     // O supertest req dados da app
-    //     const response = await request(app).get('/usuarios/1');
+    test('PUT /usuarios /:id - Deve atualizar um usuários no banco', async () => {
+        // seed pra test
+        await prismaClient.usuario.update({
+            where: { email: "integrado@teste.com" },
+            data: {
+                nome: 'Usuario de Teste Integrado PUT Atualizado',
+                email: 'integradoPUT@teste.com',
+                senha: '123',
+                cargo: 'medico',
+            },
+        });
 
 
-    //     // deu boa?
-    //     expect(response.status).toBe(200);
-
-    //     // O corpo da resposta é um array?
-    //     expect(Array.isArray(response.body)).toBe(true);
-
-    //     // O array contém o usuário que criamos?
-    //     expect(response.body.length).toBe(1);
-    //     expect(response.body[0].nome).toBe('Usuario de Teste Integrado');
-    //     expect(response.body[0].email).toBe('integrado@teste.com');
-    // });
+        // O supertest req dados da app
+        const response = await request(app)
+         .get("/usuarios/byemail/integradoPUT@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
 
-    // test('POST /usuarios - Deve criar um usuários no banco', async () => {
-    //     // limpar as que dependem do usuário
+        // deu boa?
+        expect(response.status).toBe(200);
 
-    //     await prismaClient.prontuario.deleteMany({});
-    //     await prismaClient.consulta.deleteMany({});
-    //     await prismaClient.exame.deleteMany({});
-    //     await prismaClient.paciente.deleteMany({});
+        // O corpo da resposta é um array?
+        expect(Array.isArray(response.body)).toBe(true);
 
-    //     // 3. "pai"
-    //     await prismaClient.usuario.deleteMany({});
+        // O array contém o usuário que criamos?
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
+        expect(response.body[0].email).toBe('integradoPost@teste.com');
+    });
 
-    //     // seed pra test
-    //     await prismaClient.usuario.create({
-    //         data: {
-    //             nome: 'Usuario de Teste Integrado Post',
-    //             email: 'integradoPost@teste.com',
-    //             senha: '123',
-    //             cargo: 'medico',
-    //         },
-    //     });
+    test('DELETE /usuarios /:id - Deve deletar um usuários no banco', async () => {
 
+        // 3. "pai"
+        await prismaClient.usuario.delete({where: {email: "integrado@teste.com"}});
 
-    //     // O supertest req dados da app
-    //     const response = await request(app).get('/usuarios/1');
+        // O supertest req dados da app
+        const response = await request(app)
+         .get("/usuarios/byemail/integrado@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
+        // deu boa?
+        expect(response.status).toBe(400);
 
-    //     // deu boa?
-    //     expect(response.status).toBe(200);
+        // O corpo da resposta é um array?
+        expect(Array.isArray(response.body)).toBe(true);
 
-    //     // O corpo da resposta é um array?
-    //     expect(Array.isArray(response.body)).toBe(true);
-
-    //     // O array contém o usuário que criamos?
-    //     expect(response.body.length).toBe(1);
-    //     expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
-    //     expect(response.body[0].email).toBe('integradoPost@teste.com');
-    // });
-
-    // test('PUT /usuarios /:id - Deve atualizar um usuários no banco', async () => {
-    //     // seed pra test
-    //     await prismaClient.usuario.update({
-    //         where: { id: 1 },
-    //         data: {
-    //             nome: 'Usuario de Teste Integrado PUT Atualizado',
-    //             email: 'integradoPUT@teste.com',
-    //             senha: '123',
-    //             cargo: 'medico',
-    //         },
-    //     });
-
-
-    //     // O supertest req dados da app
-    //     const response = await request(app).get('/usuarios/1');
-
-
-    //     // deu boa?
-    //     expect(response.status).toBe(200);
-
-    //     // O corpo da resposta é um array?
-    //     expect(Array.isArray(response.body)).toBe(true);
-
-    //     // O array contém o usuário que criamos?
-    //     expect(response.body.length).toBe(1);
-    //     expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
-    //     expect(response.body[0].email).toBe('integradoPost@teste.com');
-    // });
-
-    // test('DELETE /usuarios /:id - Deve deletar um usuários no banco', async () => {
-        
-    //     // 3. "pai"
-    //     await prismaClient.usuario.delete({where: {id: 1}});
-
-    //     // O supertest req dados da app
-    //     const response = await request(app).get('/usuarios/1');
-
-
-    //     // deu boa?
-    //     expect(response.status).toBe(400);
-
-    //     // O corpo da resposta é um array?
-    //     expect(Array.isArray(response.body)).toBe(true);
-
-    //     // O array contém o usuário que criamos?
-    //     expect(response.body.length).toBe(1);
-    //     expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
-    //     expect(response.body[0].email).toBe('integradoPost@teste.com');
-    // });
+        // O array contém o usuário que criamos?
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
+        expect(response.body[0].email).toBe('integradoPost@teste.com');
+    });
 
 
 });
