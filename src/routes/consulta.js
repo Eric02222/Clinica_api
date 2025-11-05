@@ -34,7 +34,7 @@ const authRouter = Router();
  *       400:
  *         description: Dados inválidos
  */
-consultaRouter.post("/consultas", consultaController.criarConsulta);
+consultaRouter.get("/consultas", consultaController.getTodosOsConsultas);
 
 
 /**
