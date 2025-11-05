@@ -9,7 +9,7 @@ const authRouter = Router();
 /**
  * @swagger
  * tags:
- *   name: Pacientes
+ *   name: Protuarios
  *   description: Rotas públicas e protegidas de autenticação JWT
  */
 
@@ -40,7 +40,7 @@ pacienteRouter.get('/pacientes', pacienteController.getTodosOsPacientes);
  * @swagger
  * /pacientes/{id}:
  *   get:
- *     summary: Retornar exame especifica
+ *     summary: Retornar paciente especifico
  *     tags: [Autenticação]
  *     parameters:
  *       - in: path
@@ -52,7 +52,7 @@ pacienteRouter.get('/pacientes', pacienteController.getTodosOsPacientes);
  *         description: The user ID.
  *     responses:
  *       201:
- *         description: Exame retornada com sucesso
+ *         description: Paciente retornada com sucesso
  *       400:
  *         description: Dados inválidos
  */
@@ -63,7 +63,7 @@ pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId);
  * @swagger
  * /pacientes:
  *   post:
- *     summary: Cria um nova Consulta
+ *     summary: Cria um novo paciente
  *     tags: [Autenticação]
  *     requestBody:
  *       required: true
@@ -72,34 +72,38 @@ pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId);
  *           schema:
  *             type: object
  *             required:
- *               - tipo_exame
- *               - resultado    
- *               - data_exame           
- *               - link_arquivo 
- *		 - observacoes  
- *               - paciente_id           
+ *               - nome                
+ *               - cpf           
+ *               - telefone
+ *		 - email 
+ *		 - data_nascimento
+ *		 - responsavel
+ *		 - sexo                  
  *             properties:
- *               tipo_exame:
+ *               nome:
  *                 type: string
- *                 example: Dor de barriga
- *               resultado:
+ *                 example: Carlos
+ *               cpf:
  *                 type: string
- *                 example: algo no estomago
- *               resultado:
+ *                 example: 55555555548
+ *               telefone:
+ *                 type: int
+ *                 example: 99999-99999
+ *               email:
+ *                 type: strig
+ *                 example: exemplo@gmail.com
+ *               data_nascimento:
  *                 type: date
  *                 example: 20_20_2020
- *               link_arquivo :
- *                 type: string
- *                 example: https://link_arquivo
- *               observacoes:
- *                 type: string
- *                 example: Dor constante na barriga...
- *               paciente_id:
+ *               responsavel:
  *                 type: int
- *                 example: 1
+ *                 example: Pai
+ *               sexo:
+ *                 type: string
+ *                 example: Maculino
  *     responses:
  *       201:
- *         description: Consulta criada com sucesso
+ *         description: Paciente criada com sucesso
  *       400:
  *         description: Dados inválidos
  */
@@ -110,43 +114,47 @@ pacienteRouter.post("/pacientes", pacienteController.criarPaciente);
  * @swagger
  * /pacientes/{id}:
  *   put:
- *     summary: Atualizar uma Exame
+ *     summary: Atualizar uma paciente
  *     tags: [Autenticação]
- *      *     requestBody:
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             required:
- *               - tipo_exame
- *               - resultado    
- *               - data_exame           
- *               - link_arquivo 
- *		 - observacoes  
- *               - paciente_id           
+ *               - nome                
+ *               - cpf           
+ *               - telefone
+ *		 - email 
+ *		 - data_nascimento
+ *		 - responsavel
+ *		 - sexo                  
  *             properties:
- *               tipo_exame:
+ *               nome:
  *                 type: string
- *                 example: Dor de barriga
- *               resultado:
+ *                 example: Carlos
+ *               cpf:
  *                 type: string
- *                 example: algo no estomago
- *               resultado:
+ *                 example: 55555555548
+ *               telefone:
+ *                 type: int
+ *                 example: 99999-99999
+ *               email:
+ *                 type: strig
+ *                 example: exemplo@gmail.com
+ *               data_nascimento:
  *                 type: date
  *                 example: 20_20_2020
- *               link_arquivo :
- *                 type: string
- *                 example: https://link_arquivo
- *               observacoes:
- *                 type: string
- *                 example: Dor constante na barriga...
- *               paciente_id:
+ *               responsavel:
  *                 type: int
- *                 example: 1
+ *                 example: Pai
+ *               sexo:
+ *                 type: string
+ *                 example: Maculino
  *     responses:
  *       201:
- *         description: Exame Atualizada com sucesso
+ *         description: Paciente Atualizada com sucesso
  *       400:
  *         description: Dados inválidos
  */
@@ -157,7 +165,7 @@ pacienteRouter.put("/pacientes/:id", pacienteController.atualizarPaciente);
  * @swagger
  * /pacientes/{id}:
  *   delete:
- *     summary: Deletar uma Exame
+ *     summary: Deletar uma pacientes
  *     tags: [Autenticação]
  *      parameters:
  *       - in: path
@@ -169,7 +177,7 @@ pacienteRouter.put("/pacientes/:id", pacienteController.atualizarPaciente);
  *         description: The user ID
  *     responses:
  *       201:
- *         description: Exame Deletada com sucesso
+ *         description: Paciente Deletada com sucesso
  *       400:
  *         description: Dados inválidos
  */
