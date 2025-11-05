@@ -143,7 +143,7 @@ prontuarioRouter.put("/protuarios/:id", prontuarioController.atualizarProntuario
  * @swagger
  * /protuarios/{id}:
  *   delete:
- *     summary: Deletar uma Exame
+ *     summary: Deletar uma protuario
  *     tags: [Autenticação]
  *      parameters:
  *       - in: path
