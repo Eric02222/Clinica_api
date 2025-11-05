@@ -9,7 +9,7 @@ const authRouter = Router();
 /**
  * @swagger
  * tags:
- *   name: Protuarios
+ *   name: Pacientes
  *   description: Rotas públicas e protegidas de autenticação JWT
  */
 
