@@ -75,6 +75,7 @@ prontuarioRouter.get("/protuarios/:id", prontuarioController.getProtuarioPorId);
  *               - descricao                
  *               - data           
  *               - medico_responsavel_id
+ *               - paciente_id
  *		 - paciente_id           
  *             properties:
  *               descricao:
@@ -114,6 +115,7 @@ prontuarioRouter.post("/protuarios", prontuarioController.criarProntuario);
  *               - descricao                
  *               - data           
  *               - medico_responsavel_id
+ *               - paciente_id
  *		 - paciente_id           
  *             properties:
  *               descricao:
