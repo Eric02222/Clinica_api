@@ -77,7 +77,7 @@ exameRouter.get("/exames/:id", exameController.getExamePorId);
  *               - resultado    
  *               - data_exame           
  *               - link_arquivo 
- *		 - observacoes  
+ *		           - observacoes  
  *               - paciente_id           
  *             properties:
  *               tipo_exame:
@@ -86,7 +86,7 @@ exameRouter.get("/exames/:id", exameController.getExamePorId);
  *               resultado:
  *                 type: string
  *                 example: algo no estomago
- *               resultado:
+ *               data_exame:
  *                 type: date
  *                 example: 20_20_2020
  *               link_arquivo :
@@ -124,7 +124,7 @@ exameRouter.post("/exames", exameController.criarExame);
  *               - resultado    
  *               - data_exame           
  *               - link_arquivo 
- *		 - observacoes  
+ *		           - observacoes  
  *               - paciente_id           
  *             properties:
  *               tipo_exame:
@@ -133,7 +133,7 @@ exameRouter.post("/exames", exameController.criarExame);
  *               resultado:
  *                 type: string
  *                 example: algo no estomago
- *               resultado:
+ *               data_exame:
  *                 type: date
  *                 example: 20_20_2020
  *               link_arquivo :
