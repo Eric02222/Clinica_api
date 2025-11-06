@@ -61,7 +61,7 @@ class AuthController {
                 usuarioId: usuario.id,
                 email: usuario.email,
                 nome: usuario.nome,
-
+                cargo: usuario.cargo
             });
 
             // Gerar refresh token (longa duração)
@@ -69,7 +69,7 @@ class AuthController {
                 usuarioId: usuario.id,
                 email: usuario.email,
                 nome: usuario.nome,
-
+                cargo: usuario.cargo
             });
             // Armazenar refresh token no banco de dados
             const expiresAt = new Date();
@@ -90,7 +90,7 @@ class AuthController {
                     usuarioId: usuario.id,
                     email: usuario.email,
                     nome: usuario.nome,
-
+                    cargo: usuario.cargo
                 },
             });
         } catch (error) {

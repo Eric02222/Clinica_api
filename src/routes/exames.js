@@ -1,71 +1,60 @@
 import { Router } from "express";
-import { auth } from "../middleware/auth.js";
-import { authController } from "../controller/authController/AuthController.js";
+import { exameController } from "../controller/Exame/ExameController.js" 
 
-
-const authRouter = Router();
-
+export const exameRouter = Router();
 
 /**
  * @swagger
  * tags:
  *   name: Exames
- *   description: Rotas públicas e protegidas de autenticação JWT
+ *   description: Rotas protegidas para gerenciamento de exames
  */
-
-
-
 
 /**
  * @swagger
  * /exames:
  *   get:
- *     summary: Retornar lista de exames
- *     tags: [Autenticação]
- *     parameters:
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         required: true
+ *     summary: Lista todos os exames
+ *     tags: [Exames]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       201:
- *         description: Lista de exames retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de exames
+ *       401:
+ *         description: Token inválido ou ausente
  */
-exameRouter.get('/exames', exameController.getTodosOsExames);
-
 
 /**
  * @swagger
- * /exames/{id}:
+ * "/exames/:id":
  *   get:
- *     summary: Retornar exame especifica
- *     tags: [Autenticação]
+ *     summary: Pega exame por id
+ *     tags: [Exames]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
+ *         name: userId
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: The user ID.
+ *         required: true
+ *         description: Adiquirir exame por id
  *     responses:
- *       201:
- *         description: Exame retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna uma exame especifica
+ *       401:
+ *         description: Token inválido ou ausente
  */
-exameRouter.get("/exames/:id", exameController.getExamePorId);
-
 
 /**
  * @swagger
- * /exames:
+ * /consultas:
  *   post:
- *     summary: Cria um nova Consulta
- *     tags: [Autenticação]
+ *     summary: Cria um novo exame
+ *     tags: [Exames]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -73,104 +62,109 @@ exameRouter.get("/exames/:id", exameController.getExamePorId);
  *           schema:
  *             type: object
  *             required:
- *               - tipo_exame
- *               - resultado    
- *               - data_exame           
- *               - link_arquivo 
- *		           - observacoes  
- *               - paciente_id           
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
+ *               - medico_responsavel_id
+ *               - paciente_id 
  *             properties:
- *               tipo_exame:
+ *               motivo:
  *                 type: string
- *                 example: Dor de barriga
- *               resultado:
- *                 type: string
- *                 example: algo no estomago
- *               data_exame:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
- *               link_arquivo :
- *                 type: string
- *                 example: https://link_arquivo
+ *                 example: 1992-02-16
  *               observacoes:
  *                 type: string
- *                 example: Dor constante na barriga...
- *               paciente_id:
+ *                 example: precisa de remedio
+ *               medico_responsavel_id:
+ *                 type: int
+ *                 example: 1
+ *               paciente_id :
  *                 type: int
  *                 example: 1
  *     responses:
- *       201:
- *         description: Consulta criada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Cria um novo exame
+ *       401:
+ *         description: Token inválido ou ausente
  */
-exameRouter.post("/exames", exameController.criarExame);
-
 
 /**
  * @swagger
- * /exames/{id}:
+ * /exames/:id:
  *   put:
- *     summary: Atualizar uma Exame
- *     tags: [Autenticação]
- *      *     requestBody:
+ *     summary: Atualizar um exame
+ *     tags: [Exames]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             required:
- *               - tipo_exame
- *               - resultado    
- *               - data_exame           
- *               - link_arquivo 
- *		           - observacoes  
- *               - paciente_id           
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
+ *               - medico_responsavel_id
+ *               - paciente_id 
  *             properties:
- *               tipo_exame:
+ *               motivo:
  *                 type: string
- *                 example: Dor de barriga
- *               resultado:
- *                 type: string
- *                 example: algo no estomago
- *               data_exame:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
- *               link_arquivo :
- *                 type: string
- *                 example: https://link_arquivo
+ *                 example: 1992-02-16
  *               observacoes:
  *                 type: string
- *                 example: Dor constante na barriga...
- *               paciente_id:
+ *                 example: precisa de remedio
+ *               medico_responsavel_id:
  *                 type: int
  *                 example: 1
+ *               paciente_id :
+ *                 type: int
+ *                 example: 1
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Atualiza exame por id
  *     responses:
- *       201:
- *         description: Exame Atualizada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Atualiza exame especifico
+ *       401:
+ *         description: Token inválido ou ausente
  */
-exameRouter.put("/exames/:id", exameController.atualizarExame);
 
 /**
  * @swagger
- * /exames/{id}:
+ * "/exames/:id":
  *   delete:
- *     summary: Deletar uma Exame
- *     tags: [Autenticação]
- *      parameters:
+ *     summary: Deleta exame por id
+ *     tags: [Exames]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
  *       - in: path
- *        name: id # Note the name is the same as in the path
- *         required: true
+ *         name: userId
  *         schema:
- *           type: int
- *           minimum: 1
- *         description: The user ID
+ *           type: integer
+ *         required: true
+ *         description: Deleta exame por id
  *     responses:
- *       201:
- *         description: Exame Deletada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Deleta exame por id
+ *       401:
+ *         description: Token inválido ou ausente
  */
-exameRouter.delete("/exames/:id", exameController.deletarExame);
+
+
+exameRouter.get("/exames", exameController.getTodosOsExames)
+exameRouter.get("/exames/:id", exameController.getExamePorId)
+exameRouter.post("/exames", exameController.criarExame)
+exameRouter.put("/exames/:id", exameController.atualizarExame)
+exameRouter.delete("/exames/:id", exameController.deletarExame)

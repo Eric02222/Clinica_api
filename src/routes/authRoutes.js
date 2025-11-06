@@ -30,6 +30,7 @@ const authRouter = Router();
  *               - nome
  *               - email
  *               - senha
+ *               - cargo
  *             properties:
  *               nome:
  *                 type: string
@@ -40,6 +41,9 @@ const authRouter = Router();
  *               senha:
  *                 type: string
  *                 example: 123456
+ *               cargo:
+ *                 type: string
+ *                 example: Medico
  *     responses:
  *       201:
  *         description: Usuário criado com sucesso

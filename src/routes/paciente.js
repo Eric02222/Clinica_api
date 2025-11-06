@@ -1,70 +1,60 @@
 import { Router } from "express";
-import { auth } from "../middleware/auth.js";
-import { authController } from "../controller/authController/AuthController.js";
+import { pacienteController } from "../controller/Paciente/PacienteController.js"
 
-
-const authRouter = Router();
-
+export const pacienteRouter = Router();
 
 /**
  * @swagger
  * tags:
  *   name: Pacientes
- *   description: Rotas públicas e protegidas de autenticação JWT
+ *   description: Rotas protegidas para gerenciamento de Pacientes
  */
-
-
-
 
 /**
  * @swagger
  * /pacientes:
  *   get:
- *     summary: Retornar lista de pacientes
- *     tags: [Autenticação]
- *     parameters:
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         required: true
+ *     summary: Lista todos os Pacientes
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       201:
- *         description: Lista de pacientes retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de pacientes
+ *       401:
+ *         description: Token inválido ou ausente
  */
-pacienteRouter.get('/pacientes', pacienteController.getTodosOsPacientes);
 
 /**
  * @swagger
- * /pacientes/{id}:
+ * "/pacientes/:id":
  *   get:
- *     summary: Retornar paciente especifico
- *     tags: [Autenticação]
+ *     summary: Pega paciente por id
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
+ *         name: userId
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: The user ID.
+ *         required: true
+ *         description: Adiquirir paciente por id
  *     responses:
- *       201:
- *         description: Paciente retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna uma paciente especifica
+ *       401:
+ *         description: Token inválido ou ausente
  */
-pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId);
-
 
 /**
  * @swagger
  * /pacientes:
  *   post:
  *     summary: Cria um novo paciente
- *     tags: [Autenticação]
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -72,50 +62,42 @@ pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId);
  *           schema:
  *             type: object
  *             required:
- *               - nome                
- *               - cpf           
- *               - telefone
- *		 - email 
- *		 - data_nascimento
- *		 - responsavel
- *		 - sexo                  
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
+ *               - medico_responsavel_id
+ *               - paciente_id 
  *             properties:
- *               nome:
+ *               motivo:
  *                 type: string
- *                 example: Carlos
- *               cpf:
- *                 type: string
- *                 example: 55555555548
- *               telefone:
- *                 type: int
- *                 example: 99999-99999
- *               email:
- *                 type: strig
- *                 example: exemplo@gmail.com
- *               data_nascimento:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
- *               responsavel:
- *                 type: int
- *                 example: Pai
- *               sexo:
+ *                 example: 1992-02-16
+ *               observacoes:
  *                 type: string
- *                 example: Maculino
+ *                 example: precisa de remedio
+ *               medico_responsavel_id:
+ *                 type: int
+ *                 example: 1
+ *               paciente_id :
+ *                 type: int
+ *                 example: 1
  *     responses:
- *       201:
- *         description: Paciente criada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Cria um novo paciente
+ *       401:
+ *         description: Token inválido ou ausente
  */
-pacienteRouter.post("/pacientes", pacienteController.criarPaciente);
-
 
 /**
  * @swagger
- * /pacientes/{id}:
+ * /pacientes/:id:
  *   put:
- *     summary: Atualizar uma paciente
- *     tags: [Autenticação]
+ *     summary: Atualizar um paciente
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -123,65 +105,67 @@ pacienteRouter.post("/pacientes", pacienteController.criarPaciente);
  *           schema:
  *             type: object
  *             required:
- *               - nome                
- *               - cpf           
- *               - telefone
- *		 - email 
- *		 - data_nascimento
- *		 - responsavel
- *		 - sexo                  
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
+ *               - medico_responsavel_id
+ *               - paciente_id 
  *             properties:
- *               nome:
+ *               motivo:
  *                 type: string
- *                 example: Carlos
- *               cpf:
- *                 type: string
- *                 example: 55555555548
- *               telefone:
- *                 type: int
- *                 example: 99999-99999
- *               email:
- *                 type: strig
- *                 example: exemplo@gmail.com
- *               data_nascimento:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
- *               responsavel:
- *                 type: int
- *                 example: Pai
- *               sexo:
+ *                 example: 1992-02-16
+ *               observacoes:
  *                 type: string
- *                 example: Maculino
+ *                 example: precisa de remedio
+ *               medico_responsavel_id:
+ *                 type: int
+ *                 example: 1
+ *               paciente_id :
+ *                 type: int
+ *                 example: 1
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Atualiza paciente por id
  *     responses:
- *       201:
- *         description: Paciente Atualizada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Atualiza paciente especifico
+ *       401:
+ *         description: Token inválido ou ausente
  */
-pacienteRouter.put("/pacientes/:id", pacienteController.atualizarPaciente);
-
 
 /**
  * @swagger
- * /pacientes/{id}:
+ * "/pacientes/:id":
  *   delete:
- *     summary: Deletar uma pacientes
- *     tags: [Autenticação]
- *      parameters:
+ *     summary: Deleta paciente por id
+ *     tags: [Pacientes]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
  *       - in: path
- *        name: id # Note the name is the same as in the path
- *         required: true
+ *         name: userId
  *         schema:
- *           type: int
- *           minimum: 1
- *         description: The user ID
+ *           type: integer
+ *         required: true
+ *         description: Deleta paciente por id
  *     responses:
- *       201:
- *         description: Paciente Deletada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Deleta paciente por id
+ *       401:
+ *         description: Token inválido ou ausente
  */
-pacienteRouter.delete("/pacientes/:id", pacienteController.deletarPaciente);
 
 
 
+pacienteRouter.get("/pacientes", pacienteController.getTodosOsPacientes)
+pacienteRouter.get("/pacientes/:id", pacienteController.getPacientePorId)
+pacienteRouter.post("/pacientes", pacienteController.criarPaciente)
+pacienteRouter.put("/pacientes/:id", pacienteController.atualizarPaciente)
+pacienteRouter.delete("/pacientes/:id", pacienteController.deletarPaciente)

@@ -1,70 +1,60 @@
 import { Router } from "express";
-import { auth } from "../middleware/auth.js";
-import { authController } from "../controller/authController/AuthController.js";
+import { prontuarioController } from "../controller/Prontuario/ProntuarioController.js"
 
-
-const authRouter = Router();
-
+export const prontuarioRouter = Router();
 
 /**
  * @swagger
  * tags:
- *   name: Protuarios
- *   description: Rotas públicas e protegidas de autenticação JWT
+ *   name: Prontuarios
+ *   description: Rotas protegidas para gerenciamento de prontuarios
  */
-
-
-
 
 /**
  * @swagger
- * /protuarios:
+ * /prontuarios:
  *   get:
- *     summary: Retornar lista de protuarios
- *     tags: [Autenticação]
- *     parameters:
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         required: true
+ *     summary: Lista todos os prontuarios
+ *     tags: [Prontuarios]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       201:
- *         description: Lista de protuarios retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de prontuarios
+ *       401:
+ *         description: Token inválido ou ausente
  */
-prontuarioRouter.get('/protuarios', prontuarioController.getTodosOsProntuarios);
 
 /**
  * @swagger
- * /protuarios/{id}:
+ * "/prontuarios/:id":
  *   get:
- *     summary: Retornar protuario especifica
- *     tags: [Autenticação]
+ *     summary: Pega prontuario por id
+ *     tags: [Prontuarios]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
+ *         name: userId
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: The user ID.
+ *         required: true
+ *         description: Adiquirir prontuario por id
  *     responses:
- *       201:
- *         description: protuario retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna uma prontuario especifica
+ *       401:
+ *         description: Token inválido ou ausente
  */
-prontuarioRouter.get("/protuarios/:id", prontuarioController.getProtuarioPorId);
-
 
 /**
  * @swagger
- * /protuarios:
+ * /prontuarios:
  *   post:
- *     summary: Cria um novo protuario
- *     tags: [Autenticação]
+ *     summary: Cria um novo prontuario
+ *     tags: [Prontuarios]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -72,94 +62,110 @@ prontuarioRouter.get("/protuarios/:id", prontuarioController.getProtuarioPorId);
  *           schema:
  *             type: object
  *             required:
- *               - descricao                
- *               - data           
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
  *               - medico_responsavel_id
- *               - paciente_id
- *		 - paciente_id           
+ *               - paciente_id 
  *             properties:
- *               descricao:
+ *               motivo:
  *                 type: string
- *                 example: Dor de barriga
- *               data:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
+ *                 example: 1992-02-16
+ *               observacoes:
+ *                 type: string
+ *                 example: precisa de remedio
  *               medico_responsavel_id:
  *                 type: int
  *                 example: 1
- *               paciente_id:
+ *               paciente_id :
  *                 type: int
  *                 example: 1
  *     responses:
- *       201:
- *         description: Protuario criada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Cria um novo prontuario
+ *       401:
+ *         description: Token inválido ou ausente
  */
-prontuarioRouter.post("/protuarios", prontuarioController.criarProntuario);
-
 
 /**
  * @swagger
- * /pacientes/{id}:
+ * /prontuarios/:id:
  *   put:
- *     summary: Atualizar uma protuario
- *     tags: [Autenticação]
-  *     requestBody:
+ *     summary: Atualizar um prontuario
+ *     tags: [Prontuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     requestBody:
  *       required: true
  *       content:
  *         application/json:
  *           schema:
  *             type: object
  *             required:
- *               - descricao                
- *               - data           
+ *               - motivo
+ *               - data_consulta
+ *               - observacoes
  *               - medico_responsavel_id
- *               - paciente_id
- *		 - paciente_id           
+ *               - paciente_id 
  *             properties:
- *               descricao:
+ *               motivo:
  *                 type: string
- *                 example: Dor de barriga
- *               data:
+ *                 example: dor de cabeça
+ *               data_consulta:
  *                 type: date
- *                 example: 20_20_2020
+ *                 example: 1992-02-16
+ *               observacoes:
+ *                 type: string
+ *                 example: precisa de remedio
  *               medico_responsavel_id:
  *                 type: int
  *                 example: 1
- *               paciente_id:
+ *               paciente_id :
  *                 type: int
  *                 example: 1
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Atualiza prontuario por id
  *     responses:
- *       201:
- *         description: Protuario Atualizada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Atualiza prontuario especifico
+ *       401:
+ *         description: Token inválido ou ausente
  */
-prontuarioRouter.put("/protuarios/:id", prontuarioController.atualizarProntuario)
-
 
 /**
  * @swagger
- * /protuarios/{id}:
+ * "/prontuarios/:id":
  *   delete:
- *     summary: Deletar uma protuario
- *     tags: [Autenticação]
- *      parameters:
+ *     summary: Deleta prontuario por id
+ *     tags: [Prontuarios]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
  *       - in: path
- *        name: id # Note the name is the same as in the path
- *         required: true
+ *         name: userId
  *         schema:
- *           type: int
- *           minimum: 1
- *         description: The user ID
+ *           type: integer
+ *         required: true
+ *         description: Deleta prontuario por id
  *     responses:
- *       201:
- *         description: Protuario Deletada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Deleta prontuario por id
+ *       401:
+ *         description: Token inválido ou ausente
  */
-prontuarioRouter.delete("/protuarios/:id", prontuarioController.deletarProntuario)
 
 
 
+prontuarioRouter.get("/prontuarios", prontuarioController.getTodosOsProntuarios)
+prontuarioRouter.get("/prontuarios/:id", prontuarioController.getProtuarioPorId)
+prontuarioRouter.post("/prontuarios", prontuarioController.criarProntuario)
+prontuarioRouter.put("/prontuarios/:id", prontuarioController.atualizarProntuario)
+prontuarioRouter.delete("/prontuarios/:id", prontuarioController.deletarProntuario)

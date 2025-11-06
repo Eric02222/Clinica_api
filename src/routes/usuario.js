@@ -1,70 +1,84 @@
+// Path: src/routes/usuarios.js
+
 import { Router } from "express";
-import { auth } from "../middleware/auth.js";
-import { authController } from "../controller/authController/AuthController.js";
+import { usuarioController } from "../controller/Usuario/UsuarioController.js";
 
-
-const authRouter = Router();
-
+export const usuarioRouter = Router();
 
 /**
  * @swagger
  * tags:
- *   name: Uuarios
- *   description: Rotas públicas e protegidas de autenticação JWT
+ *   name: Usuários
+ *   description: Rotas protegidas para gerenciamento de usuários
  */
-
-
-
 
 /**
  * @swagger
  * /usuarios:
  *   get:
- *     summary: Retornar lista de usuarios
- *     tags: [Autenticação]
- *     parameters:
- *       - in: query
- *         name: role
- *         schema:
- *           type: string
- *         required: true
+ *     summary: Lista todos os usuários
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
  *     responses:
- *       201:
- *         description: Lista de usuarios retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de usuários
+ *       401:
+ *         description: Token inválido ou ausente
  */
-usuarioRouter.get('/usuarios', usuarioController.getTodosOsUsuarios);
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * "/usuarios/:id":
  *   get:
- *     summary: Retornar usuario especifico
- *     tags: [Autenticação]
+ *     summary: Pega usuário por id
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
  *     parameters:
  *       - in: path
- *         name: id
- *         required: true
+ *         name: userId
  *         schema:
  *           type: integer
- *           minimum: 1
- *         description: The user ID.
+ *         required: true
+ *         description: Adiquirir usuario por id
  *     responses:
- *       201:
- *         description: Usuario retornada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de usuários
+ *       401:
+ *         description: Token inválido ou ausente
  */
-usuarioRouter.get("/usuarios/:id", usuarioController.getUsuarioPorId);
 
+/**
+ * @swagger
+ * "/usuarios/byemail/":
+ *   get:
+ *     summary: Pega usuário por email
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Adiquirir usuario por email
+ *     responses:
+ *       200:
+ *         description: Retorna usuário por email
+ *       401:
+ *         description: Token inválido ou ausente
+ */
 
 /**
  * @swagger
  * /usuarios:
  *   post:
- *     summary: Cria um novo usuario
- *     tags: [Autenticação]
+ *     summary: Cria um novo usuário
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -72,38 +86,38 @@ usuarioRouter.get("/usuarios/:id", usuarioController.getUsuarioPorId);
  *           schema:
  *             type: object
  *             required:
- *               - nome                
- *               - email                 
- *               - senha      
- *		 - cargo                     
+ *               - nome
+ *               - email
+ *               - senha
+ *               - cargo
  *             properties:
  *               nome:
  *                 type: string
- *                 example: Carlos
+ *                 example: João da Silva
  *               email:
  *                 type: string
- *                 example: exemplo@gmail.com
+ *                 example: joao@email.com
  *               senha:
  *                 type: string
- *                 example: 20_20_2020
+ *                 example: 123456
  *               cargo:
  *                 type: string
  *                 example: Medico
  *     responses:
- *       201:
- *         description: Usuario criada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Retorna a lista de usuários
+ *       401:
+ *         description: Token inválido ou ausente
  */
-usuarioRouter.post("/usuarios", usuarioController.criarUsuario);
-
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * /usuarios:
  *   put:
- *     summary: Atualizar uma usuario
- *     tags: [Autenticação]
+ *     summary: Atualiza um usuário
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
  *     requestBody:
  *       required: true
  *       content:
@@ -111,53 +125,62 @@ usuarioRouter.post("/usuarios", usuarioController.criarUsuario);
  *           schema:
  *             type: object
  *             required:
- *               - nome                
- *               - email                 
- *               - senha      
- *		 - cargo                     
+ *               - nome
+ *               - email
+ *               - senha
+ *               - cargo
  *             properties:
  *               nome:
  *                 type: string
- *                 example: Carlos
+ *                 example: João da Silva
  *               email:
  *                 type: string
- *                 example: exemplo@gmail.com
+ *                 example: joao@email.com
  *               senha:
  *                 type: string
- *                 example: 20_20_2020
+ *                 example: 123456
  *               cargo:
  *                 type: string
  *                 example: Medico
+ *     parameters:
+ *       - in: path
+ *         name: userId
+ *         schema:
+ *           type: integer
+ *         required: true
+ *         description: Adiquirir usuario por id
  *     responses:
- *       201:
- *         description: Usuario Atualizada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Atualiza um usuário
+ *       401:
+ *         description: Token inválido ou ausente
  */
-usuarioRouter.put("/usuarios/:id", usuarioController.atualizarUsuario);
-
 
 /**
  * @swagger
- * /usuarios/{id}:
+ * "/usuarios/:id":
  *   delete:
- *     summary: Deletar uma usuarios
- *     tags: [Autenticação]
- *      parameters:
+ *     summary: Deleta usuário por id
+ *     tags: [Usuários]
+ *     security:
+ *       - bearerAuth: []
+ *     parameters:
  *       - in: path
- *        name: id # Note the name is the same as in the path
- *         required: true
+ *         name: userId
  *         schema:
- *           type: int
- *           minimum: 1
- *         description: The user ID
+ *           type: integer
+ *         required: true
+ *         description: Deleta usuario por id
  *     responses:
- *       201:
- *         description: Usuario Deletada com sucesso
- *       400:
- *         description: Dados inválidos
+ *       200:
+ *         description: Deleta usuário
+ *       401:
+ *         description: Token inválido ou ausente
  */
+
+usuarioRouter.get("/usuarios", usuarioController.getTodosOsUsuarios);
+usuarioRouter.get("/usuarios/byemail/", usuarioController.getUsuarioPorEmail);
+usuarioRouter.get("/usuarios/:id", usuarioController.getUsuarioPorId);
+usuarioRouter.post("/usuarios", usuarioController.criarUsuario);
+usuarioRouter.put("/usuarios/:id", usuarioController.atualizarUsuario);
 usuarioRouter.delete("/usuarios/:id", usuarioController.deletarUsuario);
-
-
-
