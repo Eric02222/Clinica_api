@@ -2,8 +2,8 @@
 import express from "express";
 import cors from "cors";
 import { usuarioRouter } from "./routes/usuario.js";
-import { pacienteRouter } from "./routes/paciente.js";
-import { consultaRouter } from "./routes/consulta.js";
+import { pacientesRouter } from "./routes/paciente.js";
+import { consultasRouter } from "./routes/consulta.js";
 import { prontuarioRouter } from "./routes/prontuario.js";
 import { exameRouter } from "./routes/exames.js";
 import authRouter from "./routes/authRoutes.js";
@@ -15,6 +15,7 @@ app.use(express.json());
 app.get("/ping", (req, res) => {
  res.send("pong");
 });
+
 // Swagger UI
 swaggerDocs(app);
 // Rotas públicas
@@ -24,6 +25,6 @@ app.use(auth);
 // Rotas privadas
 app.use(usuarioRouter);
 app.use(exameRouter);
-app.use(pacienteRouter);
+app.use(pacientesRouter);
 app.use(prontuarioRouter);
-app.use(consultaRouter);
+app.use(consultasRouter);

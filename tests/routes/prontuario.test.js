@@ -67,26 +67,24 @@ describe("Testes de Integração para /usuarios", () => {
     });
 
 
-    test('GET /usuarios /byemail /:email - Deve retornar a um usuário especifico do banco', async () => {
+    test('GET /usuarios /:email - Deve retornar a um usuário especifico do banco', async () => {
         // O supertest req dados da app
-
         const response = await request(app)
-            .get("/usuarios/byemail?email=integrado@teste.com")
-            .set("Authorization", `Bearer ${token}`)
-            .expect("Content-Type", /json/);
+         .get("/usuarios/byemail/integrado@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
 
         // deu boa?
         expect(response.status).toBe(200);
 
         // O corpo da resposta é um array?
-        expect(typeof response.body).toBe('object');
-        expect(response.body).not.toBeNull();
-        expect(Array.isArray(response.body)).toBe(false);
+        expect(Array.isArray(response.body)).toBe(true);
 
-        // Verificamos as propriedades diretamente no objeto 'response.body'
-        expect(response.body.nome).toBe('Usuario de Teste Integrado');
-        expect(response.body.email).toBe('integrado@teste.com');
+        // O array contém o usuário que criamos?
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado');
+        expect(response.body[0].email).toBe('integrado@teste.com');
     });
 
 
@@ -108,9 +106,9 @@ describe("Testes de Integração para /usuarios", () => {
 
         // O supertest req dados da app
         const response = await request(app)
-            .get("/usuarios")
-            .set("Authorization", `Bearer ${token}`)
-            .expect("Content-Type", /json/);
+         .get("/usuarios")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
 
         // deu boa?
@@ -125,65 +123,59 @@ describe("Testes de Integração para /usuarios", () => {
         expect(response.body[0].email).toBe('integradoPost@teste.com');
     });
 
-    test('PUT /usuarios /byemail /:email - Deve atualizar um usuários no banco', async () => {
-        const usuario = await request(app)
-            .get("/usuarios/byemail?email=integrado@teste.com")
-            .set("Authorization", `Bearer ${token}`)
-            .expect("Content-Type", /json/);
-
-        const dadosParaAtualizar = {
-            nome: 'Usuario de Teste Integrado PUT Atualizado',
-            email: 'integradoPUT@teste.com',
-            cargo: 'gestor' // Vamos mudar o cargo, por exemplo
-        };
-
+    test('PUT /usuarios /:id - Deve atualizar um usuários no banco', async () => {
         // seed pra test
         await prismaClient.usuario.update({
-            where: { id: usuario.body.id },
-            data: dadosParaAtualizar,
+            where: { email: "integrado@teste.com" },
+            data: {
+                nome: 'Usuario de Teste Integrado PUT Atualizado',
+                email: 'integradoPUT@teste.com',
+                senha: '123',
+                cargo: 'medico',
+            },
         });
+
 
         // O supertest req dados da app
         const response = await request(app)
-            .get("/usuarios/byemail?email=integradoPUT@teste.com")
-            .set("Authorization", `Bearer ${token}`)
-            .expect("Content-Type", /json/);
+         .get("/usuarios/byemail/integradoPUT@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
 
         // deu boa?
         expect(response.status).toBe(200);
 
         // O corpo da resposta é um array?
-        expect(typeof response.body).toBe('object');
-        expect(response.body).not.toBeNull();
-        expect(Array.isArray(response.body)).toBe(false);
+        expect(Array.isArray(response.body)).toBe(true);
 
         // O array contém o usuário que criamos?
-        // Verificamos as propriedades diretamente no objeto 'response.body'
-        expect(response.body.nome).toBe('Usuario de Teste Integrado PUT Atualizado');
-        expect(response.body.email).toBe('integradoPUT@teste.com');
-        expect(response.body.cargo).toBe('gestor');
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
+        expect(response.body[0].email).toBe('integradoPost@teste.com');
     });
 
     test('DELETE /usuarios /:id - Deve deletar um usuários no banco', async () => {
-        const usuario = await request(app)
-            .get("/usuarios/byemail?email=integrado@teste.com")
-            .set("Authorization", `Bearer ${token}`)
-            .expect("Content-Type", /json/)
-            .expect(200);
 
-        const userIdToDelete = usuario.body.id
-
-        await prismaClient.usuario.delete({ where: { id: userIdToDelete } });
+        // 3. "pai"
+        await prismaClient.usuario.delete({where: {email: "integrado@teste.com"}});
 
         // O supertest req dados da app
         const response = await request(app)
-            .get("/usuarios/byemail?email=integrado@teste.com")
-            .set("Authorization", `Bearer ${token}`);
+         .get("/usuarios/byemail/integrado@teste.com")
+         .set("Authorization", `Bearer ${token}`)
+         .expect("Content-Type", /json/);
 
         // deu boa?
         expect(response.status).toBe(400);
 
+        // O corpo da resposta é um array?
+        expect(Array.isArray(response.body)).toBe(true);
+
+        // O array contém o usuário que criamos?
+        expect(response.body.length).toBe(1);
+        expect(response.body[0].nome).toBe('Usuario de Teste Integrado Post');
+        expect(response.body[0].email).toBe('integradoPost@teste.com');
     });
 
 

@@ -24,24 +24,23 @@ class AuthController {
             const existingUser = await prismaClient.usuario.findUnique({
                 where: { email },
             });
+            console.log(existingUser)
             if (existingUser) {
                 return res.status(409).json({ error: "Usuário já existe" });
             }
             // Hash da senha com bcrypt
             const saltRounds = 10;
-            const hashedsenha = await bcrypt.hash(senha, saltRounds);
+            const hashedPassword = await bcrypt.hash(senha, saltRounds);
             // Criar usuário no banco de dados
-            const usuario = await prismaClient.usuario.create({
-                data: { email: email, senha: hashedsenha, nome: nome, cargo: cargo || null },
+            const user = await prismaClient.usuario.create({
+                data: { email, senha: hashedPassword, nome: nome || null, cargo: cargo },
                 select: {
                     id: true,
                     email: true,
                     nome: true,
-                    cargo: true,
-
                 },
             });
-            return res.status(201).json(usuario);
+            return res.status(201).json(user);
         } catch (error) {
             console.error("Erro no registro:", error);
             res.status(500).json({ error: "Erro interno do servidor" });
@@ -52,24 +51,22 @@ class AuthController {
     async login(req, res) {
         try {
             const { email, senha } = req.body;
-            const usuario = await prismaClient.usuario.findUnique({ where: { email } }); // Verificar se usuário existe e senha está correta
-            if (!usuario || !(await bcrypt.compare(senha, usuario.senha))) {
+            const user = await prismaClient.usuario.findUnique({ where: { email } }); // Verificar se usuário existe e senha está correta
+            if (!user || !(await bcrypt.compare(senha, user.senha))) {
                 return res.status(401).json({ error: "Credenciais inválidas" });
             }
             // Gerar access token (curta duração)
             const accessToken = signAccessToken({
-                usuarioId: usuario.id,
-                email: usuario.email,
-                nome: usuario.nome,
-                cargo: usuario.cargo
+                userId: user.id,
+                email: user.email,
+                nome: user.nome,
             });
 
             // Gerar refresh token (longa duração)
             const refreshToken = signRefreshToken({
-                usuarioId: usuario.id,
-                email: usuario.email,
-                nome: usuario.nome,
-                cargo: usuario.cargo
+                userId: user.id,
+                email: user.email,
+                nome: user.nome,
             });
             // Armazenar refresh token no banco de dados
             const expiresAt = new Date();
@@ -79,18 +76,17 @@ class AuthController {
                 data: {
                     token: refreshToken,
                     type: "refresh",
-                    usuarioId: usuario.id,
+                    usuarioId: user.id,
                     expiresAt,
                 },
             });
             res.status(200).json({
                 accessToken,
                 refreshToken,
-                usuario: {
-                    usuarioId: usuario.id,
-                    email: usuario.email,
-                    nome: usuario.nome,
-                    cargo: usuario.cargo
+                user: {
+                    id: user.id,
+                    email: user.email,
+                    nome: user.nome,
                 },
             });
         } catch (error) {
@@ -99,7 +95,6 @@ class AuthController {
         }
         return res;
     };
-
 
     async refresh(
         req,
@@ -119,7 +114,7 @@ class AuthController {
         try {
             const payload = verifyRefresh(refreshToken);
             const accessToken = signAccessToken({
-                userId: payload.id,
+                userId: payload.userId,
                 email: payload.email,
                 nome: payload.nome,
             });
@@ -134,12 +129,10 @@ class AuthController {
         res
     ) {
         const { refreshToken } = req.body;
-        console.log(refreshToken)
         try {
             const storedRefreshToken = await prismaClient.token.findFirst({
                 where: { token: refreshToken },
             });
-            console.log(storedRefreshToken)
             if (
                 !storedRefreshToken ||
                 storedRefreshToken.revoked ||
@@ -151,12 +144,12 @@ class AuthController {
                 where: { id: storedRefreshToken?.id ?? 0 },
                 data: { revoked: true },
             });
-            console.log("teste")
-            return res.status(200).json("Usuário deslogado!");
-
         } catch (error) {
             res.status(400).json(error)
         }
+
+        return res.status(200).json("Usuário deslogado!");
+
     }
 }
 
